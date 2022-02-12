@@ -1,4 +1,4 @@
-name: "Check Coding Standards PHP"
+name: "Unit tests"
 
 on:
   workflow_call:
@@ -12,13 +12,15 @@ on:
         required: false
         type: string
     secrets:
+      CODECOV_TOKEN:
+        required: true
       PACKAGIST_USER:
         required: true
       PACKAGIST_TOKEN:
         required: true
 
 jobs:
-  coding-standards:
+  tests:
     name: PHP ${{ matrix.php-version }}
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -30,10 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
-      - name: Install PHP
+      - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
@@ -44,5 +44,10 @@ jobs:
       - name: Install dependecies
         run: composer ${{inputs.composer-install}} --no-progress --no-interaction --no-ansi
 
-      - name: Run friendsofphp/php-cs-fixer
-        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --dry-run --stop-on-violation --using-cache=no --path-mode=intersection $(git diff --name-only --diff-filter=ACMRTUXB "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" | grep  -E "(.php$)")
+      - name: Test
+        run: vendor/bin/phpunit
+
+      - name: Send code coverage report to codecov.io
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

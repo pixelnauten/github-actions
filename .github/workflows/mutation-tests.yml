@@ -1,4 +1,4 @@
-name: "Check Coding Standards PHP"
+name: "Mutation tests with Infection"
 
 on:
   workflow_call:
@@ -11,6 +11,14 @@ on:
         default: 'update'
         required: false
         type: string
+      min-msi:
+        default: 100
+        required: false
+        type: number
+      min-covered-msi:
+        default: 100
+        required: false
+        type: number
     secrets:
       PACKAGIST_USER:
         required: true
@@ -18,9 +26,10 @@ on:
         required: true
 
 jobs:
-  coding-standards:
+  infection:
     name: PHP ${{ matrix.php-version }}
     runs-on: ${{ matrix.operating-system }}
+
     strategy:
       matrix:
         php-version: ${{fromJson(inputs.php-versions)}}
@@ -30,8 +39,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -44,5 +51,7 @@ jobs:
       - name: Install dependecies
         run: composer ${{inputs.composer-install}} --no-progress --no-interaction --no-ansi
 
-      - name: Run friendsofphp/php-cs-fixer
-        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --dry-run --stop-on-violation --using-cache=no --path-mode=intersection $(git diff --name-only --diff-filter=ACMRTUXB "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" | grep  -E "(.php$)")
+      - name: Test with infection/infection
+        run: |
+          git fetch --depth=1 origin $GITHUB_BASE_REF
+          vendor/bin/infection --min-msi=${{inputs.min-msi}} --min-covered-msi=${{inputs.min-covered-msi}} --threads=4 --git-diff-lines --git-diff-base=origin/$GITHUB_BASE_REF --logger-github --ignore-msi-with-no-mutations --only-covered

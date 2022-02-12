@@ -1,4 +1,4 @@
-name: "Check Coding Standards PHP"
+name: "Static analysis with Psalm"
 
 on:
   workflow_call:
@@ -18,9 +18,10 @@ on:
         required: true
 
 jobs:
-  coding-standards:
+  psalm:
     name: PHP ${{ matrix.php-version }}
     runs-on: ${{ matrix.operating-system }}
+
     strategy:
       matrix:
         php-version: ${{fromJson(inputs.php-versions)}}
@@ -44,5 +45,5 @@ jobs:
       - name: Install dependecies
         run: composer ${{inputs.composer-install}} --no-progress --no-interaction --no-ansi
 
-      - name: Run friendsofphp/php-cs-fixer
-        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --dry-run --stop-on-violation --using-cache=no --path-mode=intersection $(git diff --name-only --diff-filter=ACMRTUXB "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" | grep  -E "(.php$)")
+      - name: Psalm
+        run: vendor/bin/psalm --threads=4 --output-format=github --stats $(git diff --name-only --diff-filter=ACMRTUXB "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" | grep  -E "(.php$)")
