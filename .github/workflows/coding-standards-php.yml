@@ -2,6 +2,11 @@ name: "Check Coding Standards PHP"
 
 on:
   workflow_call:
+    secrets:
+      PACKAGIST_USER:
+        required: true
+      PACKAGIST_TOKEN:
+        required: true
 
 jobs:
   coding-standards:
