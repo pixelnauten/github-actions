@@ -1,0 +1,36 @@
+name: "Check Coding Standards PHP"
+
+on:
+  workflow_call:
+
+jobs:
+  coding-standards:
+    name: php-cs-fixer with PHP ${{ matrix.php-version }}
+    runs-on: ${{ matrix.operating-system }}
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+        operating-system:
+          - "ubuntu-latest"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Auth with private packagist
+        run: composer config --auth http-basic.repo.packagist.com ${{ secrets.PACKAGIST_USER }} ${{ secrets.PACKAGIST_TOKEN }}
+
+      - name: Install dependecies
+        run: composer update --no-progress --no-interaction --no-ansi
+
+      - name: Run friendsofphp/php-cs-fixer
+        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --dry-run --stop-on-violation --using-cache=no --path-mode=intersection $(git diff --name-only --diff-filter=ACMRTUXB "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" | grep  -E "(.php$)")
