@@ -7,6 +7,10 @@ on:
         default: '8.0'
         required: false
         type: string
+      composer-install:
+        default: 'update'
+        required: false
+        type: string
     secrets:
       PACKAGIST_USER:
         required: true
@@ -17,7 +21,6 @@ jobs:
   coding-standards:
     name: php-cs-fixer with PHP ${{ matrix.php-version }}
     runs-on: ${{ matrix.operating-system }}
-
     strategy:
       matrix:
         php-version: ${{fromJson(inputs.php-versions)}}
@@ -39,7 +42,7 @@ jobs:
         run: composer config --auth http-basic.repo.packagist.com ${{ secrets.PACKAGIST_USER }} ${{ secrets.PACKAGIST_TOKEN }}
 
       - name: Install dependecies
-        run: composer update --no-progress --no-interaction --no-ansi
+        run: composer ${{inputs.composer-install}} --no-progress --no-interaction --no-ansi
 
       - name: Run friendsofphp/php-cs-fixer
         run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --dry-run --stop-on-violation --using-cache=no --path-mode=intersection $(git diff --name-only --diff-filter=ACMRTUXB "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" | grep  -E "(.php$)")
