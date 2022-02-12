@@ -2,6 +2,11 @@ name: "Check Coding Standards PHP"
 
 on:
   workflow_call:
+    inputs:
+      php-versions:
+        default: '8.0'
+        required: false
+        type: string
     secrets:
       PACKAGIST_USER:
         required: true
@@ -15,8 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version:
-          - "7.4"
+        php-version: ${{fromJson(inputs.php-versions)}}
         operating-system:
           - "ubuntu-latest"
 
