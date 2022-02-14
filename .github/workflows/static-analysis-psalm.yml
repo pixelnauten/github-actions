@@ -4,11 +4,17 @@ on:
   workflow_call:
     inputs:
       php-versions:
-        default: '8.0'
+        default: >-
+          ['8.0']
         required: false
         type: string
-      composer-install:
-        default: 'update'
+      composer-dependencies:
+        default: >-
+          ['highest']
+        required: false
+        type: string
+      composer-options:
+        default: "--no-progress --no-interaction --no-ansi"
         required: false
         type: string
     secrets:
@@ -19,12 +25,12 @@ on:
 
 jobs:
   psalm:
-    name: PHP ${{ matrix.php-version }}
-    runs-on: ${{ matrix.operating-system }}
-
+    name: PHP ${{matrix.php-version}} with ${{matrix.composer-dependency}} dependencies
+    runs-on: ${{matrix.operating-system}}
     strategy:
       matrix:
         php-version: ${{fromJson(inputs.php-versions)}}
+        composer-dependency: ${{fromJson(inputs.composer-dependencies)}}
         operating-system:
           - "ubuntu-latest"
 
@@ -37,13 +43,16 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: ${{matrix.php-version}}
 
       - name: Auth with private packagist
-        run: composer config --auth http-basic.repo.packagist.com ${{ secrets.PACKAGIST_USER }} ${{ secrets.PACKAGIST_TOKEN }}
+        run: composer config --auth http-basic.repo.packagist.com ${{secrets.PACKAGIST_USER}} ${{secrets.PACKAGIST_TOKEN}}
 
-      - name: Install dependecies
-        run: composer ${{inputs.composer-install}} --no-progress --no-interaction --no-ansi
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{matrix.composer-dependency}}
+          composer-options: ${{inputs.composer-options}}
 
       - name: Psalm
-        run: vendor/bin/psalm --threads=4 --output-format=github --stats $(git diff --name-only --diff-filter=ACMRTUXB "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" | grep  -E "(.php$)")
+        run: vendor/bin/psalm --threads=4 --output-format=github --stats $(git diff --name-only --diff-filter=ACMRTUXB "${{github.event.pull_request.base.sha}}..${{github.event.pull_request.head.sha}}" | grep  -E "(.php$)")
