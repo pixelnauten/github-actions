@@ -79,7 +79,7 @@ jobs:
         uses: getong/mariadb-action@v1.1
         with:
           mariadb version: ${{inputs.database-version}}
-          mysql database: ${{input.database-name}}
+          mysql database: ${{inputs.database-name}}
           mysql root password: ''
 
       - name: Wait for database
