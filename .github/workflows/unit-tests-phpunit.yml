@@ -17,6 +17,22 @@ on:
         default: "--no-progress --no-interaction --no-ansi"
         required: false
         type: string
+      database:
+        default: ''
+        required: false
+        type: string
+      database-populate-command:
+        default: 'php tests/createDatabase.php'
+        required: false
+        type: string
+      database-version:
+        default: 'latest'
+        required: false
+        type: string
+      database-name:
+        default: 'database'
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -53,6 +69,28 @@ jobs:
         with:
           dependency-versions: ${{matrix.composer-dependency}}
           composer-options: ${{inputs.composer-options}}
+
+      - name: Stop default MySQL database
+        if: inputs.database != ''
+        run: sudo service mysql stop
+
+      - name: Setup database MariaDB
+        if: inputs.database == 'mariadb'
+        uses: getong/mariadb-action@v1.1
+        with:
+          mariadb version: ${{inputs.database-version}}
+          mysql database: ${{inputs.database-name}}
+          mysql root password: ''
+
+      - name: Wait for database
+        if: inputs.database == 'mariadb'
+        run: |
+          while ! `mysqladmin ping -h 127.0.0.1 --silent`; do printf 'Waiting for database...\n'; sleep 1; done;
+          mysql -h 127.0.0.1 -uroot -e 'SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))'
+
+      - name: Populate database
+        if: inputs.database != ''
+        run: ${{inputs.database-populate-command}}
 
       - name: Test
         run: vendor/bin/phpunit
