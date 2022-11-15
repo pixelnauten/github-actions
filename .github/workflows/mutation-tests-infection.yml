@@ -66,6 +66,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{matrix.php-version}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Auth with private packagist
         run: composer config --auth http-basic.repo.packagist.com ${{secrets.PACKAGIST_USER}} ${{secrets.PACKAGIST_TOKEN}}
