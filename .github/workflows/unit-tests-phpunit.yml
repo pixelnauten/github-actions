@@ -33,6 +33,10 @@ on:
         default: 'database'
         required: false
         type: string
+      phpunit-params:
+        default: ''
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -95,7 +99,7 @@ jobs:
         run: ${{inputs.database-populate-command}}
 
       - name: Test
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit ${{inputs.phpunit-params}}
 
       - name: Send code coverage report to codecov.io
         uses: codecov/codecov-action@v3
