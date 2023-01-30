@@ -1,0 +1,95 @@
+name: "Deploy to AWS EB"
+
+on:
+  workflow_call:
+    inputs:
+      php-versions:
+        default: >-
+          ['8.0']
+        required: false
+        type: string
+      composer-dependencies:
+        default: >-
+          ['highest']
+        required: false
+        type: string
+      composer-options:
+        default: "--no-progress --no-interaction --no-ansi"
+        required: false
+        type: string
+      database:
+        default: ''
+        required: false
+        type: string
+      database-populate-command:
+        default: 'php tests/createDatabase.php'
+        required: false
+        type: string
+      database-version:
+        default: 'latest'
+        required: false
+        type: string
+      database-name:
+        default: 'database'
+        required: false
+        type: string
+    secrets:
+      PACKAGIST_USER:
+        required: true
+      PACKAGIST_TOKEN:
+        required: true
+      AWS_KEY:
+        required: true
+      AWS_SECRET:
+        required: true
+      AWS_APPLICATION_NAME:
+        required: true
+      AWS_ENVIRONMENT_NAME:
+        required: true
+      AWS_REGION:
+        required: true
+
+jobs:
+  phpunit:
+    name: PHP ${{matrix.php-version}} with ${{matrix.composer-dependency}} dependencies
+    runs-on: ${{matrix.operating-system}}
+    strategy:
+      matrix:
+        php-version: ${{fromJson(inputs.php-versions)}}
+        composer-dependency: ${{fromJson(inputs.composer-dependencies)}}
+        operating-system:
+          - "ubuntu-latest"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{matrix.php-version}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auth with private packagist
+        run: composer config --auth http-basic.repo.packagist.com ${{secrets.PACKAGIST_USER}} ${{secrets.PACKAGIST_TOKEN}}
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{matrix.composer-dependency}}
+          composer-options: ${{inputs.composer-options}}
+
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+
+      - name: Deploy to AWS EB
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET }}
+          application_name: ${{ secrets.AWS_APPLICATION_NAME }}
+          environment_name: ${{ secrets.AWS_ENVIRONMENT_NAME }}
+          version_label: CI/CD ${{ github.run_number }}
+          region: ${{ secrets.AWS_REGION }}
+          deployment_package: deploy.zip
