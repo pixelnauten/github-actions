@@ -8,8 +8,7 @@ on:
           ['8.0']
         required: false
         type: string
-    environment:
-      php-versions:
+      environment:
         default: 'live'
         required: false
         type: string
