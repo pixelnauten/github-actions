@@ -8,6 +8,10 @@ on:
           ['8.0']
         required: false
         type: string
+      environment:
+        default: 'live'
+        required: false
+        type: string
     secrets:
       PACKAGIST_USER:
         required: true
@@ -28,6 +32,7 @@ jobs:
   deployment:
     name: PHP ${{matrix.php-version}} with locked dependencies
     runs-on: ${{matrix.operating-system}}
+    environment: ${{inputs.environment}}
     strategy:
       matrix:
         php-version: ${{fromJson(inputs.php-versions)}}
