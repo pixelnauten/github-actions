@@ -12,6 +12,10 @@ on:
         default: 'live'
         required: false
         type: string
+      timeout-minutes:
+        default: '5'
+        required: false
+        type: string
     secrets:
       PACKAGIST_USER:
         required: true
@@ -38,7 +42,7 @@ jobs:
         php-version: ${{fromJson(inputs.php-versions)}}
         operating-system:
           - "ubuntu-latest"
-
+    timeout-minutes: ${{inputs.timeout-minutes}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
