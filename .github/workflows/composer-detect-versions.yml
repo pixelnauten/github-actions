@@ -2,6 +2,10 @@ name: "Detect PHP versions from composer.json"
 
 on:
   workflow_call:
+    outputs:
+      versions: ${{ jobs.detect-php-versions.outputs.version }}
+      lowest-version: ${{ jobs.detect-php-versions.outputs.lowest }}
+      highest-version: ${{ jobs.detect-php-versions.outputs.highest }}
 
 jobs:
   detect-php-versions:
