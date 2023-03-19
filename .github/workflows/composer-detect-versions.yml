@@ -1,0 +1,27 @@
+name: "Detect PHP versions from composer.json"
+
+on:
+  workflow_call:
+    outputs:
+      versions:
+        value: ${{ jobs.detect-php-versions.outputs.versions }}
+      lowest-version:
+        value: ${{ jobs.detect-php-versions.outputs.lowest-version }}
+      highest-version:
+        value: ${{ jobs.detect-php-versions.outputs.highest-version }}
+
+jobs:
+  detect-php-versions:
+    name: "Detect PHP versions from composer.json"
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.supported-versions-matrix.outputs.version }}
+      lowest-version: ${{ steps.supported-versions-matrix.outputs.lowest }}
+      highest-version: ${{ steps.supported-versions-matrix.outputs.highest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Detect
+        id: supported-versions-matrix
+        uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
