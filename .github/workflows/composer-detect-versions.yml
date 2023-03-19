@@ -24,4 +24,4 @@ jobs:
 
       - name: Detect
         id: supported-versions-matrix
-        uses: hschapitz/github-action-composer-php-versions-in-range@main
+        uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
