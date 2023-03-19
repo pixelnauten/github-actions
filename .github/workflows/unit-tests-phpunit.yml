@@ -35,7 +35,7 @@ on:
         required: true
       PACKAGIST_TOKEN:
         required: true
-      GITHUB_TOKEN:
+      GH_TOKEN:
         required: true
 
 jobs:
