@@ -4,11 +4,11 @@ on:
   workflow_call:
     outputs:
       versions:
-        value: ${{ jobs.detect-php-versions.outputs.version }}
+        value: ${{ jobs.detect-php-versions.outputs.versions }}
       lowest-version:
-        value: ${{ jobs.detect-php-versions.outputs.lowest }}
+        value: ${{ jobs.detect-php-versions.outputs.lowest-version }}
       highest-version:
-        value: ${{ jobs.detect-php-versions.outputs.highest }}
+        value: ${{ jobs.detect-php-versions.outputs.highest-version }}
 
 jobs:
   detect-php-versions:
