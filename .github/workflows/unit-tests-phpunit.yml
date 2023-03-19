@@ -42,12 +42,25 @@ on:
         required: true
 
 jobs:
+  supported-versions-matrix:
+    name: Supported Versions Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      extensions: ${{ steps.supported-versions-matrix.outputs.extensions }}
+      version: ${{ steps.supported-versions-matrix.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: supported-versions-matrix
+        uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+
   phpunit:
     name: PHP ${{matrix.php-version}} with ${{matrix.composer-dependency}} dependencies
     runs-on: ${{matrix.operating-system}}
+    needs:
+      - supported-versions-matrix
     strategy:
       matrix:
-        php-version: ${{fromJson(inputs.php-versions)}}
+        php-version: ${{fromJson(needs.supported-versions-matrix.outputs.version)}}
         composer-dependency: ${{fromJson(inputs.composer-dependencies)}}
         operating-system:
           - "ubuntu-latest"
