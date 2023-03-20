@@ -18,7 +18,7 @@ on:
 
 jobs:
   detect-php-versions:
-    name: "Detect PHP versions from composer.json"
+    name: "PHP versions from composer.json"
     runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.supported-versions-matrix.outputs.version }}
@@ -33,7 +33,7 @@ jobs:
         uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
 
   detect-phpunit:
-    name: "Detect PHPUnit exists"
+    name: "PHPUnit"
     runs-on: ubuntu-latest
     outputs:
       files_exists: ${{ steps.check_files.outputs.files_exists }}
@@ -48,7 +48,7 @@ jobs:
           files: "phpunit.xml"
 
   detect-infection:
-    name: "Detect PHPUnit exists"
+    name: "Infection"
     runs-on: ubuntu-latest
     outputs:
       files_exists: ${{ steps.check_files.outputs.files_exists }}
@@ -63,7 +63,7 @@ jobs:
           files: "infection.json"
 
   detect-php-cs-fixer:
-    name: "Detect PHPUnit exists"
+    name: "PHP-CS-Fixer"
     runs-on: ubuntu-latest
     outputs:
       files_exists: ${{ steps.check_files.outputs.files_exists }}
@@ -76,3 +76,18 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: ".php-cs-fixer.dist.php"
+
+  detect-psalm:
+    name: "Psalm"
+    runs-on: ubuntu-latest
+    outputs:
+      files_exists: ${{ steps.check_files.outputs.files_exists }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Detect
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "psalm.xml"
