@@ -15,6 +15,8 @@ on:
         value: ${{ jobs.detect-tools.outputs.infection }}
       php-cs-fixer:
         value: ${{ jobs.detect-tools.outputs.php-cs-fixer }}
+      psalm:
+        value: ${{ jobs.detect-tools.outputs.psalm }}
 
 jobs:
   detect-php-versions:
