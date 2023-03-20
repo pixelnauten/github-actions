@@ -23,6 +23,8 @@ on:
         value: ${{ jobs.detect-ci.outputs.phpstan }}
       rector:
         value: ${{ jobs.detect-ci.outputs.rector }}
+      composer_lock:
+        value: ${{ jobs.detect-ci.outputs.composer_lock }}
 
 jobs:
   detect-ci:
@@ -39,6 +41,7 @@ jobs:
       psalm: ${{ steps.check_psalm.outputs.files_exists }}
       phpstan: ${{ steps.check_phpstan.outputs.files_exists }}
       rector: ${{ steps.check_rector.outputs.files_exists }}
+      composer_lock: ${{ steps.check_composer_lock.outputs.files_exists }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -88,3 +91,9 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: "rector.php"
+
+      - name: composer.lock
+        id: check_composer_lock
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "composer.lock"
