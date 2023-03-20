@@ -1,0 +1,99 @@
+name: "CI detector"
+
+on:
+  workflow_call:
+    outputs:
+      php-supported-versions:
+        value: ${{ jobs.detect-ci.outputs.versions }}
+      php-lowest-version:
+        value: ${{ jobs.detect-ci.outputs.lowest-version }}
+      php-highest-version:
+        value: ${{ jobs.detect-ci.outputs.highest-version }}
+      phpunit:
+        value: ${{ jobs.detect-ci.outputs.phpunit }}
+      phpunit_dist:
+        value: ${{ jobs.detect-ci.outputs.phpunit_dist }}
+      infection:
+        value: ${{ jobs.detect-ci.outputs.infection }}
+      php-cs-fixer:
+        value: ${{ jobs.detect-ci.outputs.php-cs-fixer }}
+      psalm:
+        value: ${{ jobs.detect-ci.outputs.psalm }}
+      phpstan:
+        value: ${{ jobs.detect-ci.outputs.phpstan }}
+      rector:
+        value: ${{ jobs.detect-ci.outputs.rector }}
+      composer_lock:
+        value: ${{ jobs.detect-ci.outputs.composer_lock }}
+
+jobs:
+  detect-ci:
+    name: "Detect"
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.supported-php-versions.outputs.version }}
+      lowest-version: ${{ steps.supported-php-versions.outputs.lowest }}
+      highest-version: ${{ steps.supported-php-versions.outputs.highest }}
+      phpunit: ${{ steps.check_phpunit.outputs.files_exists }}
+      phpunit_dist: ${{ steps.check_phpunit_dist.outputs.files_exists }}
+      infection: ${{ steps.check_infection.outputs.files_exists }}
+      php-cs-fixer: ${{ steps.check_php-cs-fixer.outputs.files_exists }}
+      psalm: ${{ steps.check_psalm.outputs.files_exists }}
+      phpstan: ${{ steps.check_phpstan.outputs.files_exists }}
+      rector: ${{ steps.check_rector.outputs.files_exists }}
+      composer_lock: ${{ steps.check_composer_lock.outputs.files_exists }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: PHP versions
+        id: supported-php-versions
+        uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+
+      - name: PHPUnit
+        id: check_phpunit
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "phpunit.xml"
+
+      - name: PHPUnit dist
+        id: check_phpunit_dist
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "phpunit.xml.dist"
+
+      - name: Infection
+        id: check_infection
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "infection.json"
+
+      - name: PHP-CS-Fixer
+        id: check_php-cs-fixer
+        uses: andstor/file-existence-action@v1
+        with:
+          files: ".php-cs-fixer.dist.php"
+
+      - name: Psalm
+        id: check_psalm
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "psalm.xml"
+
+      - name: Phpstan
+        id: check_phpstan
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "phpstan.neon.dist"
+
+      - name: Rector
+        id: check_rector
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "rector.php"
+
+      - name: composer.lock
+        id: check_composer_lock
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "composer.lock"
