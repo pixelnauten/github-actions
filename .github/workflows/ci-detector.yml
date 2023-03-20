@@ -15,6 +15,8 @@ on:
         value: ${{ jobs.detect-ci.outputs.phpunit_dist }}
       infection:
         value: ${{ jobs.detect-ci.outputs.infection }}
+      infection_dist:
+        value: ${{ jobs.detect-ci.outputs.infection_dist }}
       php-cs-fixer:
         value: ${{ jobs.detect-ci.outputs.php-cs-fixer }}
       psalm:
@@ -37,6 +39,7 @@ jobs:
       phpunit: ${{ steps.check_phpunit.outputs.files_exists }}
       phpunit_dist: ${{ steps.check_phpunit_dist.outputs.files_exists }}
       infection: ${{ steps.check_infection.outputs.files_exists }}
+      infection_dist: ${{ steps.check_infection_dist.outputs.files_exists }}
       php-cs-fixer: ${{ steps.check_php-cs-fixer.outputs.files_exists }}
       psalm: ${{ steps.check_psalm.outputs.files_exists }}
       phpstan: ${{ steps.check_phpstan.outputs.files_exists }}
@@ -67,6 +70,12 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: "infection.json"
+
+      - name: Infection dist
+        id: check_infection_dist
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "infection.json.dist"
 
       - name: PHP-CS-Fixer
         id: check_php-cs-fixer
