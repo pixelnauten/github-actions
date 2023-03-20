@@ -4,45 +4,36 @@ on:
   workflow_call:
     outputs:
       php-supported-versions:
-        value: ${{ jobs.detect-php-versions.outputs.versions }}
+        value: ${{ jobs.detect-ci.outputs.versions }}
       php-lowest-version:
-        value: ${{ jobs.detect-php-versions.outputs.lowest-version }}
+        value: ${{ jobs.detect-ci.outputs.lowest-version }}
       php-highest-version:
-        value: ${{ jobs.detect-php-versions.outputs.highest-version }}
+        value: ${{ jobs.detect-ci.outputs.highest-version }}
       phpunit:
-        value: ${{ jobs.detect-tools.outputs.phpunit }}
+        value: ${{ jobs.detect-ci.outputs.phpunit }}
+      phpunit_dist:
+        value: ${{ jobs.detect-ci.outputs.phpunit_dist }}
       infection:
-        value: ${{ jobs.detect-tools.outputs.infection }}
+        value: ${{ jobs.detect-ci.outputs.infection }}
       php-cs-fixer:
-        value: ${{ jobs.detect-tools.outputs.php-cs-fixer }}
+        value: ${{ jobs.detect-ci.outputs.php-cs-fixer }}
       psalm:
-        value: ${{ jobs.detect-tools.outputs.psalm }}
+        value: ${{ jobs.detect-ci.outputs.psalm }}
       phpstan:
-        value: ${{ jobs.detect-tools.outputs.phpstan }}
+        value: ${{ jobs.detect-ci.outputs.phpstan }}
       rector:
-        value: ${{ jobs.detect-tools.outputs.rector }}
+        value: ${{ jobs.detect-ci.outputs.rector }}
 
 jobs:
-  detect-php-versions:
-    name: "PHP versions from composer.json"
+  detect-ci:
+    name: "Detect"
     runs-on: ubuntu-latest
     outputs:
-      versions: ${{ steps.supported-versions-matrix.outputs.version }}
-      lowest-version: ${{ steps.supported-versions-matrix.outputs.lowest }}
-      highest-version: ${{ steps.supported-versions-matrix.outputs.highest }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Detect
-        id: supported-versions-matrix
-        uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
-
-  detect-tools:
-    name: "Tools"
-    runs-on: ubuntu-latest
-    outputs:
+      versions: ${{ steps.supported-php-versions.outputs.version }}
+      lowest-version: ${{ steps.supported-php-versions.outputs.lowest }}
+      highest-version: ${{ steps.supported-php-versions.outputs.highest }}
       phpunit: ${{ steps.check_phpunit.outputs.files_exists }}
+      phpunit_dist: ${{ steps.check_phpunit_dist.outputs.files_exists }}
       infection: ${{ steps.check_infection.outputs.files_exists }}
       php-cs-fixer: ${{ steps.check_php-cs-fixer.outputs.files_exists }}
       psalm: ${{ steps.check_psalm.outputs.files_exists }}
@@ -52,11 +43,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: PHP versions
+        id: supported-php-versions
+        uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+
       - name: PHPUnit
         id: check_phpunit
         uses: andstor/file-existence-action@v1
         with:
           files: "phpunit.xml"
+
+      - name: PHPUnit dist
+        id: check_phpunit_dist
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "phpunit.xml.dist"
 
       - name: Infection
         id: check_infection
