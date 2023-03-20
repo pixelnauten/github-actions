@@ -17,6 +17,10 @@ on:
         value: ${{ jobs.detect-tools.outputs.php-cs-fixer }}
       psalm:
         value: ${{ jobs.detect-tools.outputs.psalm }}
+      phpstan:
+        value: ${{ jobs.detect-tools.outputs.phpstan }}
+      rector:
+        value: ${{ jobs.detect-tools.outputs.rector }}
 
 jobs:
   detect-php-versions:
@@ -42,6 +46,8 @@ jobs:
       infection: ${{ steps.check_infection.outputs.files_exists }}
       php-cs-fixer: ${{ steps.check_php-cs-fixer.outputs.files_exists }}
       psalm: ${{ steps.check_psalm.outputs.files_exists }}
+      phpstan: ${{ steps.check_phpstan.outputs.files_exists }}
+      rector: ${{ steps.check_rector.outputs.files_exists }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -69,3 +75,15 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: "psalm.xml"
+
+      - name: Phpstan
+        id: check_phpstan
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "phpstan.neon.dist"
+
+      - name: Rector
+        id: check_rector
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "rector.php"
