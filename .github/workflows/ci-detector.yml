@@ -10,11 +10,11 @@ on:
       php-highest-version:
         value: ${{ jobs.detect-php-versions.outputs.highest-version }}
       phpunit:
-        value: ${{ jobs.detect-phpunit.outputs.files_exists }}
+        value: ${{ jobs.detect-tools.outputs.phpunit }}
       infection:
-        value: ${{ jobs.detect-infection.outputs.files_exists }}
+        value: ${{ jobs.detect-tools.outputs.infection }}
       php-cs-fixer:
-        value: ${{ jobs.detect-php-cs-fixer.outputs.files_exists }}
+        value: ${{ jobs.detect-tools.outputs.php-cs-fixer }}
 
 jobs:
   detect-php-versions:
@@ -32,62 +32,38 @@ jobs:
         id: supported-versions-matrix
         uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
 
-  detect-phpunit:
-    name: "PHPUnit"
+  detect-tools:
+    name: "Tools"
     runs-on: ubuntu-latest
     outputs:
-      files_exists: ${{ steps.check_files.outputs.files_exists }}
+      phpunit: ${{ steps.check_phpunit.outputs.files_exists }}
+      infection: ${{ steps.check_infection.outputs.files_exists }}
+      php-cs-fixer: ${{ steps.check_php-cs-fixer.outputs.files_exists }}
+      psalm: ${{ steps.check_psalm.outputs.files_exists }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Detect
-        id: check_files
+      - name: PHPUnit
+        id: check_phpunit
         uses: andstor/file-existence-action@v1
         with:
           files: "phpunit.xml"
 
-  detect-infection:
-    name: "Infection"
-    runs-on: ubuntu-latest
-    outputs:
-      files_exists: ${{ steps.check_files.outputs.files_exists }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Detect
-        id: check_files
+      - name: Infection
+        id: check_infection
         uses: andstor/file-existence-action@v1
         with:
           files: "infection.json"
 
-  detect-php-cs-fixer:
-    name: "PHP-CS-Fixer"
-    runs-on: ubuntu-latest
-    outputs:
-      files_exists: ${{ steps.check_files.outputs.files_exists }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Detect
-        id: check_files
+      - name: PHP-CS-Fixer
+        id: check_php-cs-fixer
         uses: andstor/file-existence-action@v1
         with:
           files: ".php-cs-fixer.dist.php"
 
-  detect-psalm:
-    name: "Psalm"
-    runs-on: ubuntu-latest
-    outputs:
-      files_exists: ${{ steps.check_files.outputs.files_exists }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Detect
-        id: check_files
+      - name: Psalm
+        id: check_psalm
         uses: andstor/file-existence-action@v1
         with:
           files: "psalm.xml"
