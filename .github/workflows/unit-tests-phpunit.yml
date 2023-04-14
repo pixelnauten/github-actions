@@ -33,6 +33,14 @@ on:
         default: 'database'
         required: false
         type: string
+      elasticsearch:
+        default: ''
+        required: false
+        type: string
+      elasticsearch-version:
+        default: '8.7.0'
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -93,6 +101,25 @@ jobs:
       - name: Populate database
         if: inputs.database != ''
         run: ${{inputs.database-populate-command}}
+
+      - name: Configure sysctl limits for elasticsearch
+        if: inputs.elasticsearch != ''
+        run: |
+          sudo swapoff -a
+          sudo sysctl -w vm.swappiness=1
+          sudo sysctl -w fs.file-max=262144
+          sudo sysctl -w vm.max_map_count=262144
+
+      - name: Setup elasticsearch
+        if: inputs.elasticsearch != ''
+        uses: getong/elasticsearch-action@v1.2
+        with:
+          elasticsearch version: ${{inputs.elasticsearch-version}}
+          host port: 9200
+          container port: 9200
+          host node port: 9300
+          node port: 9300
+          discovery type: 'single-node'
 
       - name: Test
         run: vendor/bin/phpunit
