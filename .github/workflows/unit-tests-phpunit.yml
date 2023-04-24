@@ -33,6 +33,10 @@ on:
         default: 'database'
         required: false
         type: string
+      opensearch:
+        default: 'no'
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -91,6 +95,7 @@ jobs:
           mysql -h 127.0.0.1 -uroot -e 'SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))'
 
       - name: Setup OpenSearch
+        if: inputs.opensearch == 'yes'
         uses: ankane/setup-opensearch@v1
 
       - name: Populate database
