@@ -5,12 +5,12 @@ on:
     inputs:
       php-versions:
         default: >-
-          ['8.0']
+          ["8.0"]
         required: false
         type: string
       composer-dependencies:
         default: >-
-          ['highest']
+          ["highest"]
         required: false
         type: string
       composer-options:
