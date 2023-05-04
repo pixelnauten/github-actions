@@ -5,12 +5,12 @@ on:
     inputs:
       php-versions:
         default: >-
-          ['8.0']
+          ["8.0"]
         required: false
         type: string
       composer-dependencies:
         default: >-
-          ['highest']
+          ["highest"]
         required: false
         type: string
       composer-options:
@@ -31,6 +31,10 @@ on:
         type: string
       database-name:
         default: 'database'
+        required: false
+        type: string
+      opensearch:
+        default: 'no'
         required: false
         type: string
     secrets:
@@ -89,6 +93,10 @@ jobs:
         run: |
           while ! `mysqladmin ping -h 127.0.0.1 --silent`; do printf 'Waiting for database...\n'; sleep 1; done;
           mysql -h 127.0.0.1 -uroot -e 'SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))'
+
+      - name: Setup OpenSearch
+        if: inputs.opensearch == 'yes'
+        uses: ankane/setup-opensearch@v1
 
       - name: Populate database
         if: inputs.database != ''
