@@ -55,54 +55,54 @@ jobs:
 
       - name: PHPUnit
         id: check_phpunit
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "phpunit.xml"
 
       - name: PHPUnit dist
         id: check_phpunit_dist
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "phpunit.xml.dist"
 
       - name: Infection
         id: check_infection
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "infection.json"
 
       - name: Infection dist
         id: check_infection_dist
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "infection.json.dist"
 
       - name: PHP-CS-Fixer
         id: check_php-cs-fixer
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: ".php-cs-fixer.dist.php"
 
       - name: Psalm
         id: check_psalm
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "psalm.xml"
 
       - name: Phpstan
         id: check_phpstan
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "phpstan.neon.dist"
 
       - name: Rector
         id: check_rector
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "rector.php"
 
       - name: composer.lock
         id: check_composer_lock
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "composer.lock"
