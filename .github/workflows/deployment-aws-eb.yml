@@ -20,6 +20,10 @@ on:
         default: ${{ github.head_ref || github.ref_name }} ${{ github.run_id }}-${{ github.run_attempt }}
         required: false
         type: string
+      node-version:
+        default: ''
+        required: false
+        type: string
     secrets:
       PACKAGIST_USER:
         required: true
@@ -66,6 +70,16 @@ jobs:
         with:
           dependency-versions: "locked"
           composer-options: "--no-progress --no-interaction --no-ansi"
+
+      - name: Install node
+        if: inputs.node-version != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Run NPM Install
+        if: inputs.node-version != ''
+        run: npm install
 
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
