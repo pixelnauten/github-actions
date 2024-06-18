@@ -84,7 +84,7 @@ jobs:
 
       - name: Setup database MariaDB
         if: inputs.database == 'mariadb'
-        uses: getong/mariadb-action@v1.2
+        uses: getong/mariadb-action@v1.1
         with:
           mariadb version: ${{inputs.database-version}}
           mysql database: ${{inputs.database-name}}
