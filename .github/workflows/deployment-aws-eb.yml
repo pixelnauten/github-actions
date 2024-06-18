@@ -39,8 +39,6 @@ on:
         required: true
       AWS_REGION:
         required: true
-      FONTAWESOME_PACKAGE_TOKEN:
-        required: false
 
 jobs:
   deployment:
@@ -81,11 +79,7 @@ jobs:
 
       - name: Run NPM Install
         if: inputs.node-version != ''
-        run: |
-          rm .npmrc
-          npm config set "@fortawesome:registry" https://npm.fontawesome.com/
-          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_PACKAGE_TOKEN }}"
-          npm install
+        run: npm install
 
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
