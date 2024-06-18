@@ -80,7 +80,7 @@ jobs:
         if: inputs.node-version != ''
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{inputs.node-version}}
 
       - name: Run NPM Install
         if: inputs.node-version != ''
