@@ -77,7 +77,7 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
         env:
-          FONTAWESOME_PACKAGE_TOKEN: ${{ secret.FONTAWESOME_PACKAGE_TOKEN }}
+          FONTAWESOME_PACKAGE_TOKEN: ${{ secrets.FONTAWESOME_PACKAGE_TOKEN }}
 
       - name: Run NPM Install
         if: inputs.node-version != ''
