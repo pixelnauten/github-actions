@@ -39,6 +39,8 @@ on:
         required: true
       AWS_REGION:
         required: true
+      FONTAWESOME_PACKAGE_TOKEN:
+        required: false
 
 jobs:
   deployment:
