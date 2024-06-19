@@ -41,6 +41,10 @@ on:
         default: 'database'
         required: false
         type: string
+      timeout-minutes:
+        default: 30
+        required: false
+        type: number
     secrets:
       PACKAGIST_USER:
         required: true
@@ -57,6 +61,7 @@ jobs:
         composer-dependency: ${{fromJson(inputs.composer-dependencies)}}
         operating-system:
           - "ubuntu-latest"
+    timeout-minutes: ${{inputs.timeout-minutes}}
 
     steps:
       - name: Checkout
