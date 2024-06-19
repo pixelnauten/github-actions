@@ -21,6 +21,10 @@ on:
         default: 30
         required: false
         type: number
+      auto-commit:
+        default: ""
+        required: false
+        type: string
     secrets:
       PACKAGIST_USER:
         required: true
@@ -62,4 +66,16 @@ jobs:
           composer-options: ${{inputs.composer-options}}
 
       - name: Run friendsofphp/php-cs-fixer
+        if: inputs.auto-commit == ''
         run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --dry-run --stop-on-violation --using-cache=no --path-mode=intersection $(git diff --name-only --diff-filter=ACMRTUXB "${{github.event.pull_request.base.sha}}..${{github.event.pull_request.head.sha}}" | grep  -E "(.php$)")
+
+
+      - name: Run friendsofphp/php-cs-fixer
+        if: inputs.auto-commit != ''
+        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --using-cache=no --path-mode=intersection $(git diff --name-only --diff-filter=ACMRTUXB "${{github.event.pull_request.base.sha}}..${{github.event.pull_request.head.sha}}" | grep  -E "(.php$)")
+
+      - name: Auto Commit
+        if: inputs.auto-commit != ''
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: fixed code-style
