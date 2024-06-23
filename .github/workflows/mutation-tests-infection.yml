@@ -89,17 +89,11 @@ jobs:
 
       - name: Setup database MariaDB
         if: inputs.database == 'mariadb'
-        uses: getong/mariadb-action@v1.1
+        uses: getong/mariadb-action@v1.11
         with:
           mariadb version: ${{inputs.database-version}}
           mysql database: ${{inputs.database-name}}
           mysql root password: ''
-
-      - name: Wait for database
-        if: inputs.database == 'mariadb'
-        run: |
-          while ! `mysqladmin ping -h 127.0.0.1 --silent`; do printf 'Waiting for database...\n'; sleep 1; done;
-          mysql -h 127.0.0.1 -uroot -e 'SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY",""))'
 
       - name: Populate database
         if: inputs.database != ''
