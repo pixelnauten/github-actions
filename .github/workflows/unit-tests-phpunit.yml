@@ -37,6 +37,10 @@ on:
         default: 'no'
         required: false
         type: string
+      timeout-minutes:
+        default: 30
+        required: false
+        type: number
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -55,6 +59,7 @@ jobs:
         composer-dependency: ${{fromJson(inputs.composer-dependencies)}}
         operating-system:
           - "ubuntu-latest"
+    timeout-minutes: ${{inputs.timeout-minutes}}
 
     steps:
       - name: Checkout
@@ -82,7 +87,7 @@ jobs:
 
       - name: Setup database MariaDB
         if: inputs.database == 'mariadb'
-        uses: getong/mariadb-action@v1.2
+        uses: getong/mariadb-action@v1.11
         with:
           mariadb version: ${{inputs.database-version}}
           mysql database: ${{inputs.database-name}}
