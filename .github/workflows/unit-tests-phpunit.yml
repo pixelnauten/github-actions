@@ -41,6 +41,11 @@ on:
         default: 30
         required: false
         type: number
+      runners:
+        default: >-
+          ["ubuntu-latest"]
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -57,8 +62,7 @@ jobs:
       matrix:
         php-version: ${{fromJson(inputs.php-versions)}}
         composer-dependency: ${{fromJson(inputs.composer-dependencies)}}
-        operating-system:
-          - "ubuntu-latest"
+        operating-system: ${{fromJson(inputs.runners)}}
     timeout-minutes: ${{inputs.timeout-minutes}}
 
     steps:
