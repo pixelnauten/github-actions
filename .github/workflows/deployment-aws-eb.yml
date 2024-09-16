@@ -24,6 +24,10 @@ on:
         default: ''
         required: false
         type: string
+      node-build-command:
+        default: ''
+        required: false
+        type: string
     secrets:
       PACKAGIST_USER:
         required: true
@@ -82,9 +86,21 @@ jobs:
         with:
           node-version: ${{inputs.node-version}}
 
+      - name: Cache node modules
+        if: inputs.node-version != ''
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node_modules-${{hashFiles('**/package-lock.json')}}
+          restore-keys: node_modules-
+
       - name: Run NPM Install
         if: inputs.node-version != ''
         run: npm install
+
+      - name: Run NPM build process
+        if: inputs.node-build-command != ''
+        run: ${{inputs.node-build-command}}
 
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
