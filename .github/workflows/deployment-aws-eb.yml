@@ -100,7 +100,7 @@ jobs:
 
       - name: Run NPM build process
         if: inputs.node-build-command != ''
-        run: inputs.node-build-command
+        run: ${{inputs.node-build-command}}
 
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
