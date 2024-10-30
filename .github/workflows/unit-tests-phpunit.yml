@@ -41,6 +41,10 @@ on:
         default: 30
         required: false
         type: number
+      php-unit-command:
+        default: 'vendor/bin/phpunit'
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: true
@@ -102,7 +106,7 @@ jobs:
         run: ${{inputs.database-populate-command}}
 
       - name: Test
-        run: vendor/bin/phpunit
+        run: ${{inputs.php-unit-command}}
 
       - name: Send code coverage report to codecov.io
         uses: codecov/codecov-action@v4
