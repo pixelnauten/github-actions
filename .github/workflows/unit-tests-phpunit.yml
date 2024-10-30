@@ -29,6 +29,10 @@ on:
         default: 'latest'
         required: false
         type: string
+      database-password:
+        default: ''
+        required: false
+        type: string
       database-name:
         default: 'database'
         required: false
@@ -95,7 +99,7 @@ jobs:
         with:
           mariadb version: ${{inputs.database-version}}
           mysql database: ${{inputs.database-name}}
-          mysql root password: ''
+          mysql root password: ${{inputs.database-password}}
 
       - name: Setup OpenSearch
         if: inputs.opensearch == 'yes'
