@@ -76,6 +76,6 @@ jobs:
 
       - name: Auto Commit
         if: inputs.auto-commit != ''
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: fixed code-style
