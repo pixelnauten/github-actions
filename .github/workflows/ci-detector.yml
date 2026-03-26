@@ -51,7 +51,7 @@ jobs:
 
       - name: PHP versions
         id: supported-php-versions
-        uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+        uses: WyriHaximus/github-action-composer-php-versions-in-range@v2
 
       - name: PHPUnit
         id: check_phpunit
