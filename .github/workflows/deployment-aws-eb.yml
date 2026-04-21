@@ -71,7 +71,7 @@ jobs:
         run: composer config --auth http-basic.repo.packagist.com ${{secrets.PACKAGIST_USER}} ${{secrets.PACKAGIST_TOKEN}}
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@4.0.0
         with:
           dependency-versions: "locked"
           composer-options: "--no-progress --no-interaction --no-ansi"
